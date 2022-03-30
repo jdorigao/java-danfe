@@ -1,8 +1,9 @@
 package br.com.jdorigao.impressao.service;
 
-import br.com.jdorigao.impressao.util.ImpressaoUtil;
+import br.com.jdorigao.impressao.model.Impressao;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRXmlDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -11,38 +12,36 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ImpressaoService {
 
-    public static void main(String[] args) {
-        try {
-            impressao();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void impressaoPdfArquivo(Impressao impressao, String destinoPdf) throws JRException, ParserConfigurationException, IOException, SAXException {
+        JasperPrint jasperPrint = geraImpressao(impressao);
+        JasperExportManager.exportReportToPdfFile(jasperPrint, destinoPdf);
     }
 
-    private static void impressao() throws JRException, ParserConfigurationException, IOException, SAXException {
-        String destinoPdf = "/home/juliano/Downloads/nfe.pdf";
-        String arquivoXML = "/home/juliano/Downloads/nfe.xml";
-        InputStream jasper = ImpressaoService.class.getResourceAsStream("/jasper/nfe/danfe.jasper");
-        String xml = ImpressaoUtil.leArquivo(arquivoXML);
-        String pathExpression = "/nfeProc/NFe/infNFe/det";
+    public static byte[] impressaoPdfByte(Impressao impressao) throws JRException, ParserConfigurationException, IOException, SAXException {
+        JasperPrint jasperPrint = geraImpressao(impressao);
+        return JasperExportManager.exportReportToPdf(jasperPrint);
+    }
 
+    public static void impressaoHtml(Impressao impressao, String destinoHtml) throws JRException, ParserConfigurationException, IOException, SAXException {
+        JasperPrint jasperPrint = geraImpressao(impressao);
+        JasperExportManager.exportReportToHtmlFile(jasperPrint, destinoHtml);
+
+    }
+
+    public static JasperViewer impressaoPreview(Impressao impressao) throws JRException, ParserConfigurationException, IOException, SAXException {
+        JasperPrint jasperPrint = geraImpressao(impressao);
+        return new JasperViewer(jasperPrint, true);
+    }
+
+    private static JasperPrint geraImpressao(Impressao impressao) throws IOException, ParserConfigurationException, JRException, SAXException {
         DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document document = docBuilder.parse(new InputSource(new StringReader(xml)));
+        Document document = docBuilder.parse(new InputSource(new StringReader(impressao.getXml())));
 
-        Map<String, Object> parametros = new HashMap<>();
-        parametros.put("Logo", ImpressaoService.class.getResourceAsStream("/img/nfe.jpg"));
-        parametros.put("SUBREPORT", ImpressaoService.class.getResourceAsStream("/jasper/nfe/danfe_fatura.jasper"));
-        parametros.put("XML_DATA_DOCUMENT", document);
-
-        JRDataSource xmlDataSource = new JRXmlDataSource(document, pathExpression);
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasper, parametros, xmlDataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, destinoPdf);
+        JRDataSource xmlDataSource = new JRXmlDataSource(document, impressao.getPathExpression());
+        return JasperFillManager.fillReport(impressao.getJasper(), impressao.getParametros(), xmlDataSource);
     }
 }

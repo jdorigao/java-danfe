@@ -1,5 +1,8 @@
 package br.com.jdorigao.impressao.util;
 
+import br.com.jdorigao.impressao.model.Impressao;
+import br.com.jdorigao.impressao.service.ImpressaoService;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,6 +11,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
+
+/**
+ * Classe responsavel por armazenar os metodos uteis
+ */
 
 /**
  * Classe responsavel por armazenar os metodos uteis
@@ -49,5 +56,35 @@ public class ImpressaoUtil {
         list.forEach(joiner::add);
 
         return joiner.toString();
+    }
+
+    /**
+     * Gera Objeto padrão para impressão da NFe
+     *
+     * @return
+     */
+    public static Impressao impressaoPadraoNFe(String xml) {
+        Impressao impressaoNFe = new Impressao();
+        impressaoNFe.setXml(xml);
+        impressaoNFe.setPathExpression("/nfeProc/NFe/infNFe/det");
+        impressaoNFe.setJasper(ImpressaoUtil.class.getResourceAsStream("/jasper/nfe/danfe.jasper"));
+        impressaoNFe.getParametros().put("Logo", ImpressaoService.class.getResourceAsStream("/img/nfe.jpg"));
+        impressaoNFe.getParametros().put("SUBREPORT", ImpressaoService.class.getResourceAsStream("/jasper/nfe/danfe_fatura.jasper"));
+        return impressaoNFe;
+    }
+
+    /**
+     * Gera Objeto padrão para impressão da NFCe
+     *
+     * @return
+     */
+    public static Impressao impressaoPadraoNFCe(String xml, String urlConsulta) {
+        Impressao impressaoNFCe = new Impressao();
+        impressaoNFCe.setXml(xml);
+        impressaoNFCe.setPathExpression("/");
+        impressaoNFCe.setJasper(ImpressaoUtil.class.getResourceAsStream("/jasper/nfce/danfce.jasper"));
+        impressaoNFCe.getParametros().put("Logo", ImpressaoService.class.getResourceAsStream("/img/nfe.jpg"));
+        impressaoNFCe.getParametros().put("UrlConsulta", urlConsulta);
+        return impressaoNFCe;
     }
 }
