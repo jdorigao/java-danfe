@@ -14,24 +14,65 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 
+/**
+ * Serviço principal para criar as impressões
+ */
 public class ImpressaoService {
 
+    /**
+     * Cria a impressão no caminho definido e no formato PDF
+     *
+     * @param impressao
+     * @param destinoPdf
+     * @throws JRException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static void impressaoPdfArquivo(Impressao impressao, String destinoPdf) throws JRException, ParserConfigurationException, IOException, SAXException {
         JasperPrint jasperPrint = geraImpressao(impressao);
         JasperExportManager.exportReportToPdfFile(jasperPrint, destinoPdf);
     }
 
+    /**
+     * Cria a impressão Retornando o byte[]
+     *
+     * @param impressao
+     * @return
+     * @throws JRException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static byte[] impressaoPdfByte(Impressao impressao) throws JRException, ParserConfigurationException, IOException, SAXException {
         JasperPrint jasperPrint = geraImpressao(impressao);
         return JasperExportManager.exportReportToPdf(jasperPrint);
     }
 
+    /**
+     * Cria a impressão no caminho definido e no formato HTML
+     *
+     * @param impressao
+     * @param destinoHtml
+     * @throws JRException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static void impressaoHtml(Impressao impressao, String destinoHtml) throws JRException, ParserConfigurationException, IOException, SAXException {
         JasperPrint jasperPrint = geraImpressao(impressao);
         JasperExportManager.exportReportToHtmlFile(jasperPrint, destinoHtml);
-
     }
 
+    /**
+     * Cria a impressão em um preview, use setVisible(true) para mostrar a janela
+     *
+     * @param impressao
+     * @throws JRException
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static JasperViewer impressaoPreview(Impressao impressao) throws JRException, ParserConfigurationException, IOException, SAXException {
         JasperPrint jasperPrint = geraImpressao(impressao);
         return new JasperViewer(jasperPrint, true);

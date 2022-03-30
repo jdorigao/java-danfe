@@ -15,10 +15,6 @@ import java.util.StringJoiner;
 /**
  * Classe responsavel por armazenar os metodos uteis
  */
-
-/**
- * Classe responsavel por armazenar os metodos uteis
- */
 public class ImpressaoUtil {
 
     /**
